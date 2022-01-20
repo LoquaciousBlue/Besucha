@@ -1,0 +1,64 @@
+There are two different types of cases, currently, used for course registration:
+	1. normal mode - use the shopping cart
+	2. PIN mode - some classes have special registration via PIN Registrar's Office generates and gives to professors
+
+I am going to assume that all checks on data validity on student course preferences has already been done, i.e. nobody can sign up for 10 classes, etc.
+
+Let each student have x slots to list their preferred classes, NOT including classes which require a PIN to sign up for.
+
+
+function assignClasses():
+	let numRounds = x, or number of preferred classes each student is allowed to list
+	let s_id = getStudentIdFromDb()
+
+	for each i in numRounds:
+		generateStudentRank()	
+
+		studentRank = getRankFromDb() // get [s_id, studentRank] pair for all students from db
+		studentRank.orderByRankMin()
+
+		for each student in studentRank:
+
+			let preference = student.getClassPreference(i)
+			
+			if !student.hasClass(preference):		// if student does not already have the class
+				
+				if section.hasSeats():				// if section has seat, add student
+					student.setClass(section)
+					section.removeOneSeat()
+				
+				else:								// otherwise, waitlist
+					student.addToWaitlist(section)
+
+
+	for all PIN classes:
+		student.setClass(PINClasss)
+
+
+function generateStudentRank():
+
+	NumRankedStudents = 0
+	
+	repeat for all students in order of seniority:
+		
+		students = getAllStudentsOfGrade()
+		
+		let maj = number of students with major requirements
+		for each student s.hasMajorRequirements():
+			rank = uniqueRandBetween(1, maj) + rankedStudents
+
+		let minor = number of students with minor requirements
+		for each senior s.hasMinorRequirements() & s.rank != null:
+			rank = uniqueRandBetween(maj + 1, minor) + rankedStudents
+
+		for each senior s.rank == null:
+			rank = uniqueRandBetween(minor + 1, students.size())
+
+		db.save(rank)
+		
+
+
+
+
+
+		
